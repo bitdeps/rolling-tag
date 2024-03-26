@@ -1,0 +1,41 @@
+name: 'Rolling tag'
+description: 'Rolling Tag: Provides Immutable Revisions for container images '
+author: 'dennybaa@gmail.com (Denis Baryshev)'
+
+inputs:
+  version:
+    description: 'Version to callculate the rolling tag for.'
+    required: true
+  
+  filter:
+    description: 'Regular expression to filter version releases/tags.'
+    required: false
+    default: ''
+
+  releases-only:
+    description: 'Inspect only github releases, when set to false retrieves tags from github.'
+    required: false
+    default: 'true'
+  
+  latest-github:
+    description: 'Detect (by default) or get the latest tag from the latest github release.'
+    required: false
+    default: 'false'
+
+  latest-pin:
+    description: 'Regular expression to pin the latest version.'
+    required: false
+
+outputs:
+  tag:
+    description: 'Value of the rolling tag for the given version. For example if version is v0.1.1, rolling tag can be v0.1.1 or v0.1.1-r1 etc.'
+  latest-tag:
+    description: 'The current latest rolling tag (it can be the same with latest-version if not rolled yet).'
+  latest-version:
+    description: 'Same as latest-tag, but without -r\d+ suffix.'
+  updates-latest:
+    description: 'Specifies whether the new rolling tag should update the latest tag.'
+
+runs:
+  using: node20
+  main: dist/index.js
