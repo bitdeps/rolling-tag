@@ -7,7 +7,7 @@ Imagine the scenario where we aim to publish a container image named
 `app-0.2.2`. Typically, the process involves:
 
 1. Publishing the container image to a container registry.
-2. Creating the corresponding GitHub release.
+1. Creating the corresponding GitHub release.
 
 However, container images often receive updates, such as security patches,
 without a change in version. To accommodate such updates, the version tag can
@@ -92,7 +92,8 @@ with:
 
 ### Latest Advisor (for Tagging Container Images)
 
-First, you can pin the latest to a specified pattern (which can be a regex too):
+First, you can pin the latest to a specified pattern (which can be a regular
+expression too):
 
 ```yaml
 with:
@@ -132,6 +133,6 @@ with:
   releases-only: false
 ```
 
-## Similar actions
+## Related actions
 
-https://github.com/oprypin/find-latest-tag
+- [Find Latest Tag](https://github.com/oprypin/find-latest-tag)
