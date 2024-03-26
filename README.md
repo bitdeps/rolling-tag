@@ -1,4 +1,3 @@
-[![GitHub Super-Linter](https://github.com/bitdeps/rolling-tag/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
 ![CI](https://github.com/bitdeps/rolling-tag/actions/workflows/ci.yml/badge.svg)
 
 # Github Action Rolling Tag: Provides Immutable Revisions for container images
