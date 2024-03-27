@@ -29142,6 +29142,8 @@ async function run() {
     const sorted = await getSortedVersions()
     const outputs = await rollTag(sorted)
     core.setOutput('tag', outputs.tag)
+    core.setOutput('version', outputs.version)
+    core.setOutput('semver', outputs.semver)
     core.setOutput('latest-tag', outputs.latest_tag)
     core.setOutput('latest-version', outputs.latest_version)
     core.setOutput('updates-latest', outputs.updates_latest)
@@ -29232,6 +29234,8 @@ async function rollTag(versions) {
   }
 
   outputs.latest_tag = latest || ''
+  outputs.version = outputs.tag.replace(reRollingSuffix, '')
+  outputs.semver = outputs.version.replace(/^.*?(\d+\.d+.\d+.*)/, '$1')
   outputs.latest_version = outputs.latest_tag.replace(reRollingSuffix, '')
   outputs.updates_latest = updates_latest
   return outputs

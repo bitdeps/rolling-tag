@@ -40,6 +40,10 @@ outputs:
     description:
       'Value of the rolling tag for the given version. For example if version is
       v0.1.1, rolling tag can be v0.1.1 or v0.1.1-r1 etc.'
+  version:
+    description: 'Value of tag minus -r\d+ .'
+  semver:
+    description: 'Semver presents the version stripped until \d+.\d+.\d+ .'
   latest-tag:
     description:
       'The current latest rolling tag (it can be the same with latest-version if

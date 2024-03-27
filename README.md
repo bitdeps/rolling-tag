@@ -71,6 +71,8 @@ jobs:
 | Output           | Description                                                                                                                             |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `tag`            | Value of the rolling tag for the given version. For example, if the version is v0.1.1, the rolling tag can be v0.1.1 or v0.1.1-r1, etc. |
+| `version`        | Value of tag minus -r\d+ .                                                                                                              |
+| `semver`         | Semver presents the version stripped until \d+.\d+.\d+ .                                                                                |
 | `latest-tag`     | The current latest rolling tag (it can be the same as the latest version if not rolled yet).                                            |
 | `latest-version` | Same as latest-tag, but without -r\d+ suffix.                                                                                           |
 | `updates-latest` | Specifies whether the new rolling tag should update the latest tag.                                                                     |
