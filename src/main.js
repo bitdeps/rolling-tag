@@ -10,7 +10,7 @@ const config = {
   latestPin: core.getInput('latest-pin')
 }
 
-const octokit = github.getOctokit(process.env['GITHUB_TOKEN'])
+const octokit = github.getOctokit(core.getInput('token') || null)
 const restOpts = {
   owner: github.context.repo.owner,
   repo: github.context.repo.repo,

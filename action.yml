@@ -29,6 +29,12 @@ inputs:
     description: 'Regular expression to pin the latest version.'
     required: false
 
+  token:
+    description:
+      Personal access token (auto-populated). It is used only because anonymous
+      requests are rate-limited. It can be overridden to an empty value.
+    default: ${{ github.token }}
+
 outputs:
   tag:
     description:
