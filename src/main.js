@@ -10,7 +10,15 @@ const config = {
   latestPin: core.getInput('latest-pin')
 }
 
-const octokit = github.getOctokit(core.getInput('token') || null)
+const reVSemver = new RegExp(/^v?\d+\.\d+(\.\d+)?(\.\d+)?.*/)
+const reFilter = config.filter
+  ? new RegExp(config.filter.replace(/\.x$/, ''))
+  : reVSemver
+core.debug(`Versions will be matched using filter: ${reFilter}`)
+
+const octokit = github.getOctokit(
+  core.getInput('token') || process.env['GITHUB_TOKEN']
+)
 const restOpts = {
   owner: github.context.repo.owner,
   repo: github.context.repo.repo,
@@ -19,18 +27,15 @@ const restOpts = {
 
 // Check if the version matches the latest pin
 function matchesLatest(version) {
-  const reLatest = new RegExp(config.latestPin.replace(/\.x$/, ''))
   if (!config.latestPin) return true
+  const reLatest = new RegExp(config.latestPin.replace(/\.x$/, ''))
   if (reLatest.test(version)) return true
   return false
 }
 
 // Check if the version matches either semver (v1.2.3/1.2.3) or the expression specified by filter
 function matchVersion(version) {
-  const reVSemver = new RegExp(/^v?\d+\.\d+(\.\d+)?(\.\d+)?.*/)
-  const reFilter = new RegExp(config.filter.replace(/\.x$/, ''))
-  const re = config.filter ? reFilter : reVSemver
-  return config.filter ? re.test(version) : true
+  return reFilter.test(version)
 }
 
 async function run() {
@@ -77,6 +82,7 @@ async function getSortedVersions() {
 // Get latest github release version
 async function githubLatestRelease() {
   try {
+    core.debug('Using github API to fetch the latest release')
     const resp = await octokit.rest.repos.getLatestRelease(restOpts)
     return resp.data.tag_name
   } catch (e) {
@@ -89,9 +95,13 @@ async function githubLatestRelease() {
 async function rollTag(versions) {
   const reRollingSuffix = /-r\d+$/
   const inVersion = config.version.replace(reRollingSuffix, '')
+  core.debug(`Input version is ${inVersion}, -r\\d+ suffix is stripped`)
+
   const latest = config.latestGithub
     ? await githubLatestRelease()
     : versions.find(i => matchesLatest(i))
+  core.info(`Current latest version is ${latest || 'not found'}`)
+
   let updates_latest = false
   const outputs = {}
 
@@ -100,17 +110,26 @@ async function rollTag(versions) {
   const rollId = versions.filter(
     v => v === inVersion || reCurrentVer.test(v)
   ).length
+
   outputs.tag = rollId === 0 ? inVersion : `${inVersion}-r${rollId}`
+  if (rollId > 0) core.debug(`Rolling tag is ${outputs.tag}`)
+
+  if (config.latestPin && !matchesLatest(inVersion))
+    core.info(
+      `Input version doesn't satisfy the latest-pin ${config.latestPin}`
+    )
+
+  if (!latest) updates_latest = true
 
   if (latest && matchesLatest(inVersion)) {
     const sortedLatest = [outputs.tag, latest].toSorted(
       natural_sort({ desc: true })
     )
-    if (sortedLatest[0] === outputs.tag) updates_latest = true
-  } else if (config.latestPin) {
-    core.info(
-      `Version ${inVersion} doesn't satisfy latest-pin ${config.latestPin}.`
-    )
+
+    if (sortedLatest[0] === outputs.tag) {
+      core.info(`updates_latest = true ${outputs.tag} > ${latest}`)
+      updates_latest = true
+    }
   }
 
   outputs.latest_tag = latest || ''
